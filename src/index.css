@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css');
+
+@import "tailwindcss";
+
+@theme  {
+        --color-primary:  #6B21A8; /* Your primary color */
+        --color-secondary: #6647bb;
+
+      }
+    
+
+.custom-checkbox {
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #d1d5db;
+  border-radius: 0.25rem;
+  background-color: white;
+  cursor: pointer;
+  position: relative;
+}
+.custom-checkbox:checked {
+  background-color: #6B21A8;
+  border-color: #6B21A8;
+}
+.custom-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
