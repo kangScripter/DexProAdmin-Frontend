@@ -8,6 +8,10 @@ import {
 import axios from 'axios';
 import QuillEditor from "react-quill-new";
 import 'react-quill-new/dist/quill.snow.css'; // Import the default snow theme styles
+import { useEffect } from 'react';
+import 'react-quill-new/dist/quill.bubble.css'; // Import the bubble theme styles
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const NewBlog = () => {
   const navigate = useNavigate();
@@ -20,20 +24,23 @@ const NewBlog = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    short_desc: '',
-    featured_image: null,
-    content: '',
-    status: 'Draft',
-    scheduled: false,
-    schedule_date: '',
-    schedule_time: '',
-    category: '',
-    tags: '',
-    seo_title: '',
-    seo_description: '',
-    seo_keyword: ''
-  });
+        title: '',
+        short_desc: '',
+        slug: '',
+        featured_image: null,
+        content: '',
+        status: 'Draft',
+        scheduled: false,
+        schedule_date: '',
+        schedule_time: '',
+        category: '',
+        tags: '',
+        seo_title: '',
+        seo_description: '',
+        seo_keyword: '',
+        is_featured: false,  // ✅ NEW
+        is_pinned: false     // ✅ NEW
+      });
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -74,7 +81,30 @@ const NewBlog = () => {
     setImages([]);
     setFormData((prev) => ({ ...prev, featured_image: null }));
   };
+  
+  useEffect(() => {
+  localStorage.setItem("blog_draft", JSON.stringify(formData));
+}, [formData]);
 
+
+  useEffect(() => {
+      const draft = sessionStorage.getItem('blogDraft');
+      if (draft) {
+        const parsed = JSON.parse(draft);
+        setFormData(parsed);
+      }
+    }, []);
+  
+    useEffect(() => {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape' && isFullscreen) {
+      setIsFullscreen(false);
+    }
+  };
+
+  document.addEventListener('keydown', handleKeyDown);
+  return () => document.removeEventListener('keydown', handleKeyDown);
+}, [isFullscreen]);
   const handleSubmitBlog = async () => {
   try {
     const payload = new FormData();
@@ -93,14 +123,14 @@ const NewBlog = () => {
     if (formData.featured_image) {
       payload.append("featured_image", formData.featured_image);
     }
-
-    const res = await axios.post('http://127.0.0.1:3000/api/blogs', payload, {
+    console.log(formData)
+    const res = await axios.post(`${API_URL}/api/blogs`, payload, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
     if (res.status === 200 || res.status === 201) {
       alert('Blog published successfully!');
-      navigate('/blogs/'+ res.data.blog.id);
+      navigate('/blogs/'+ res.data.blog.slug);
     } else {
       alert(res.data.message || 'Failed to publish blog');
     }
@@ -108,6 +138,11 @@ const NewBlog = () => {
     console.error('Error:', err);
     alert('Server error');
   }
+    if (res.status === 200 || res.status === 201) {
+        localStorage.removeItem("blog_draft"); // ✅ Clear draft
+        alert('Blog published successfully!');
+        navigate('/blogs/' + res.data.blog.id);
+      }
 };
   const formattingButtons = [
     { icon: RiBold, command: 'bold' },
@@ -215,7 +250,7 @@ const NewBlog = () => {
               placeholder="Enter blog title"
             />
           </div>
-
+          
           {/* Short Description */}
           <div className="bg-white p-6 rounded-xl border border-gray-300">
             <div className="flex justify-between mb-2">
@@ -233,6 +268,8 @@ const NewBlog = () => {
               placeholder="Brief description..."
             />
           </div>
+           
+  
 
           {/* Featured Image */}
           <div className="bg-white p-6 rounded-xl border border-gray-300">
@@ -266,34 +303,84 @@ const NewBlog = () => {
             )}
           </div>
 
-          {/* Content Editor with CKEditor */}
-      <div className="bg-white rounded-xl border border-gray-300 p-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Content</label>
-        <div className="text-editor-container">
-      <QuillEditor 
-         theme="snow"
-          value={formData.content}
-          onChange={(value) => handleInputChange('content', value)}
-          modules={modules}
-          formats={formats}
-          className="min-h-[300px]"
-      />
-    </div>
-      </div>
+          <div
+  className={`relative bg-white rounded-xl border border-gray-300 p-6 ${
+    isFullscreen ? 'fixed inset-0 z-[9999] bg-white overflow-auto' : ''
+  }`}
+>
+  <div className="flex justify-between items-center mb-2">
+    <label className="block text-sm font-medium text-gray-700">Content</label>
+    <button
+      type="button"
+      onClick={() => setIsFullscreen(!isFullscreen)}
+      className="text-gray-500 hover:text-gray-700"
+    >
+      {isFullscreen ? (
+        <RiFullscreenExitLine size={20} />
+      ) : (
+        <RiFullscreenLine size={20} />
+      )}
+    </button>
+  </div>
+  <QuillEditor
+    theme="snow"
+    value={formData.content}
+    onChange={(value) => handleInputChange('content', value)}
+    modules={modules}
+    formats={formats}
+    className="min-h-[300px]"
+  />
+</div>
 
-      <div className="p-6">
+      {/* <div className="p-6">
         <button
           onClick={handleSubmitBlog}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           <RiSendPlaneLine className="inline-block mr-2" /> Publish Now
         </button>
-      </div>
+      </div> */}
 
         </div>
-
+        
+        
         {/* Right Sidebar */}
         <div className="space-y-6">
+          <div className="bg-white p-6 rounded-xl border border-gray-300">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Blog Settings</h3>
+
+              <label className="block text-sm font-medium text-gray-700 mb-2">Slug</label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4"
+                value={formData.slug}
+                onChange={(e) => handleInputChange('slug', e.target.value)}
+                placeholder="Enter Slug (URL-friendly title)"
+              />
+
+              <div className="space-y-2">
+                <label className="inline-flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={formData.is_featured}
+                    onChange={(e) => handleInputChange('is_featured', e.target.checked)}
+                    className="mr-2"
+                  />
+                  <span className="text-sm text-gray-700">Mark as Featured</span>
+                </label>
+                <br />
+                <label className="inline-flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={formData.is_pinned}
+                    onChange={(e) => handleInputChange('is_pinned', e.target.checked)}
+                    className="mr-2"
+                  />
+                  <span className="text-sm text-gray-700">Pin to Top</span>
+                </label>
+              </div>
+            </div>
+
           {/* Publishing Options */}
           <div className="bg-white p-6 rounded-xl border border-gray-300">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Publishing Options</h3>
@@ -307,7 +394,7 @@ const NewBlog = () => {
               <option>Scheduled</option>
             </select>
 
-            <div className="mb-6">
+            {/* <div className="mb-6">
               <div className="flex justify-between items-center mb-2">
                 <label className="text-sm font-medium text-gray-700">Schedule Publication</label>
                 <div
@@ -327,7 +414,23 @@ const NewBlog = () => {
                     onChange={(e) => handleInputChange('schedule_time', e.target.value)} />
                 </div>
               )}
-            </div>
+            </div> */}
+            {formData.status === 'Scheduled' && (
+              <div className="space-y-3 mb-6">
+                <input
+                  type="date"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                  value={formData.schedule_date || ''}
+                  onChange={(e) => handleInputChange('schedule_date', e.target.value)}
+                />
+                <input
+                  type="time"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                  value={formData.schedule_time || ''}
+                  onChange={(e) => handleInputChange('schedule_time', e.target.value)}
+                />
+              </div>
+            )}
 
             <input type="text" placeholder="Category"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4"
