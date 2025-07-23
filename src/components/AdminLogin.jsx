@@ -45,7 +45,8 @@ const AdminLogin = () => {
       console.log(res?.status)
       if (res?.status === 200) {
         // Save login session
-        const storage = rememberMe ? localStorage : sessionStorage;
+        const storage = sessionStorage
+        // const storage = rememberMe ? localStorage : sessionStorage;
         storage.setItem('isLoggedIn', 'true');
         storage.setItem('email', email);
         storage.setItem('user', JSON.stringify(res.data.data));
