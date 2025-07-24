@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   RiArrowLeftLine, RiImageLine, RiBold, RiItalic, RiUnderline, RiListUnordered,
@@ -8,7 +8,6 @@ import {
 import axios from 'axios';
 import QuillEditor from "react-quill-new";
 import 'react-quill-new/dist/quill.snow.css'; // Import the default snow theme styles
-import { useEffect } from 'react';
 import 'react-quill-new/dist/quill.bubble.css'; // Import the bubble theme styles
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -41,6 +40,8 @@ const NewBlog = () => {
         is_featured: false,  // ✅ NEW
         is_pinned: false     // ✅ NEW
       });
+  const [categories, setCategories] = useState([]);
+  const [newCategory, setNewCategory] = useState('');
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -52,6 +53,30 @@ const NewBlog = () => {
     setImages([imageUrl]);
     setFormData((prev) => ({ ...prev, featured_image: file }));
   };
+  
+  const handleAddCategory = async () => {
+  const trimmedCategory = newCategory.trim();
+  if (trimmedCategory && !categories.includes(trimmedCategory)) {
+    try {
+      // POST the new category to API
+      const res = await axios.post(`${API_URL}/api/categories`, {
+        name: trimmedCategory
+      });
+
+      if (res.status === 200 || res.status === 201) {
+        const added = res.data.category || trimmedCategory;
+        setCategories((prev) => [...prev, added]);
+        handleInputChange('category', added);
+        setNewCategory('');
+      } else {
+        alert(res.data.message || "Failed to add category");
+      }
+    } catch (err) {
+      console.error("Error adding category:", err);
+      alert("Error adding category");
+    }
+  }
+};
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -82,6 +107,19 @@ const NewBlog = () => {
     setFormData((prev) => ({ ...prev, featured_image: null }));
   };
   
+  useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/api/categories`);
+      if (res.status === 200) {
+        setCategories(res.data.categories); // ensure API returns { categories: [...] }
+      }
+    } catch (error) {
+      console.error("Failed to load categories:", error);
+    }
+  };
+  fetchCategories();
+}, []);
   useEffect(() => {
   localStorage.setItem("blog_draft", JSON.stringify(formData));
 }, [formData]);
@@ -304,11 +342,15 @@ const NewBlog = () => {
           </div>
 
           <div
-  className={`relative bg-white rounded-xl border border-gray-300 p-6 ${
-    isFullscreen ? 'fixed inset-0 z-[9999] bg-white overflow-auto' : ''
+  className={`bg-white rounded-xl border border-gray-300 p-6 ${
+    isFullscreen ? 'fixed inset-0 z-[9999] bg-white overflow-auto flex flex-col w-screen h-screen top-0 left-0' : ''
   }`}
+  style={isFullscreen ? { position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', margin: 0, padding: 0, borderRadius: 0, boxShadow: 'none' } : {}}
 >
-  <div className="flex justify-between items-center mb-2">
+  <div
+    className="flex justify-between items-center mb-2 bg-white sticky top-0 z-30 p-4 border-b border-gray-200"
+    style={{ position: 'sticky', top: 0, left: 0, right: 0, borderRadius: isFullscreen ? 0 : undefined }}
+  >
     <label className="block text-sm font-medium text-gray-700">Content</label>
     <button
       type="button"
@@ -322,14 +364,17 @@ const NewBlog = () => {
       )}
     </button>
   </div>
-  <QuillEditor
-    theme="snow"
-    value={formData.content}
-    onChange={(value) => handleInputChange('content', value)}
-    modules={modules}
-    formats={formats}
-    className="min-h-[300px]"
-  />
+  <div className="flex-1 flex flex-col relative">
+    <QuillEditor
+      theme="snow"
+      value={formData.content}
+      onChange={(value) => handleInputChange('content', value)}
+      modules={modules}
+      formats={formats}
+      className={isFullscreen ? 'flex-1 min-h-0 h-full w-full' : 'min-h-[300px]'}
+      style={isFullscreen ? { height: '100%', width: '100%' } : {}}
+    />
+  </div>
 </div>
 
       {/* <div className="p-6">
@@ -432,9 +477,69 @@ const NewBlog = () => {
               </div>
             )}
 
-            <input type="text" placeholder="Category"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4"
-              onChange={(e) => handleInputChange('category', e.target.value)} />
+            {/* Category Dropdown + Add New */}
+          <div className="mb-4">
+  {/* <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+  <select
+    className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-2"
+    value={formData.category}
+    onChange={e => handleInputChange('category', e.target.value)}
+  >
+    <option value="">Select category</option>
+    {categories.map(cat => (
+      <option key={cat} value={cat}>{cat}</option>
+    ))}
+  </select> */}
+        <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <select
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-2"
+                value={formData.category}
+                onChange={e => {
+                  const val = e.target.value;
+                  if (val === '__other') {
+                    setNewCategory('');
+                    handleInputChange('category', ''); // temporarily clear
+                  } else {
+                    handleInputChange('category', val);
+                  }
+                }}
+              >
+                <option value="">Select category</option>
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+                <option value="__other">Other (Add New)</option>
+              </select>
+
+              {/* Show input only if Other is selected */}
+              {formData.category === '' && (
+                <div className="flex gap-2 mt-2">
+                  <input
+                    type="text"
+                    placeholder="Enter new category"
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg"
+                    value={newCategory}
+                    onChange={e => setNewCategory(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    onClick={() => {
+                      const trimmed = newCategory.trim();
+                      if (trimmed) {
+                        setCategories([...categories, trimmed]);
+                        handleInputChange('category', trimmed);
+                        setNewCategory('');
+                      }
+                    }}
+                  >
+                    Add
+                  </button>
+                </div>
+              )}
+            </div>
+            </div>
 
             <input type="text" placeholder="Tags (comma separated)"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg"
