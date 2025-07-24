@@ -36,7 +36,7 @@ const NewBlog = () => {
         tags: '',
         seo_title: '',
         seo_description: '',
-        seo_keyword: '',
+        seo_keywords: '',
         is_featured: false,  // ✅ NEW
         is_pinned: false     // ✅ NEW
       });
@@ -253,7 +253,7 @@ const NewBlog = () => {
           <p><strong>Tags:</strong> {formData.tags}</p>
           <p><strong>SEO Title:</strong> {formData.seo_title}</p>
           <p><strong>SEO Desc:</strong> {formData.seo_description}</p>
-          <p><strong>Keyword:</strong> {formData.seo_keyword}</p>
+          <p><strong>Keyword:</strong> {formData.seo_keywords}</p>
         </div>
       </div>
     );
@@ -554,7 +554,7 @@ const NewBlog = () => {
             <textarea rows="3" placeholder="Meta Description" className="w-full px-4 py-3 mb-3 border border-gray-300 rounded-lg text-sm"
               onChange={(e) => handleInputChange('seo_description', e.target.value)} />
             <input type="text" placeholder="Focus Keyword" className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm"
-              onChange={(e) => handleInputChange('seo_keyword', e.target.value)} />
+              onChange={(e) => handleInputChange('seo_keywords', e.target.value)} />
           </div>
 
           {/* Buttons */}
