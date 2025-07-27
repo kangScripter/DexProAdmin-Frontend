@@ -7,6 +7,8 @@ import NewBlog from './pages/NewBlog';
 import AuthRedirect from './components/AuthRedirect';
 import ProtectedRoute from './components/ProtectedRoute';
 import BlogDetails from './pages/BlogContent';
+import Leads from './pages/Leads';
+import Ebook from './pages/Ebook';
 const App = () => {
   return (
     <Router>
@@ -58,6 +60,22 @@ const App = () => {
             <BlogDetails />
           </ProtectedRoute>
         } />
+        <Route
+          path="/ebooks"
+          element={
+            <ProtectedRoute>
+              <Ebook />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ebook-leads"
+          element={
+            <ProtectedRoute>
+              <Leads />
+            </ProtectedRoute>
+          }
+        /> 
       </Routes>
     </Router>
   );
