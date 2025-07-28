@@ -38,7 +38,8 @@ const NewBlog = () => {
         seo_description: '',
         seo_keywords: '',
         is_featured: false,  // ✅ NEW
-        is_pinned: false     // ✅ NEW
+        is_pinned: false ,    // ✅ NEW
+        author_id: localStorage.getItem('user_id') || '1' // Default to 1 if not set
       });
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState('');
