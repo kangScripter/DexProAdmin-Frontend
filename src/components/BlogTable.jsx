@@ -63,52 +63,52 @@ export default function BlogTable() {
   // ];
   const [blogData, setBlogData] = useState([]);
 
-useEffect(() => {
-  const fetchBlogData = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/blogs`);
-      const blogs = response.data.blogs;
+  useEffect(() => {
+    const fetchBlogData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/blogs`);
+        const blogs = response.data.blogs;
 
-      const transformed = blogs.map((blog, index) => {
-        const isPublished = blog.status === "Published";
+        const transformed = blogs.map((blog, index) => {
+          const isPublished = blog.status === "Published";
 
-        return {
-          avatar: String(index + 1), // or blog.id if preferred
-          color: "bg-blue-500", // could be based on category
-          title: blog.title,
-          subtitle: `Published on ${new Date(blog.created_at).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          })}`,
-          role: blog.category || "Uncategorized",
-          roleColor: "bg-blue-100 text-blue-800",
-          status: blog.status,
-          statusColor: isPublished
-            ? "bg-green-100 text-green-800"
-            : "bg-gray-100 text-gray-800",
-          lastActive: blog.views_count > 1000
-            ? (blog.views_count / 1000).toFixed(1) + "K views"
-            : blog.views_count + " views",
-        };
-      });
+          return {
+            avatar: String(index + 1), // or blog.id if preferred
+            color: "bg-blue-500", // could be based on category
+            title: blog.title,
+            subtitle: `Published on ${new Date(blog.created_at).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}`,
+            role: blog.category || "Uncategorized",
+            roleColor: "bg-blue-100 text-blue-800",
+            status: blog.status,
+            statusColor: isPublished
+              ? "bg-green-100 text-green-800"
+              : "bg-gray-100 text-gray-800",
+            lastActive: blog.views_count > 1000
+              ? (blog.views_count / 1000).toFixed(1) + "K views"
+              : blog.views_count + " views",
+          };
+        });
 
-      setBlogData(transformed);
-    } catch (error) {
-      console.error("Error fetching blog data:", error);
-    }
-  };
+        setBlogData(transformed);
+      } catch (error) {
+        console.error("Error fetching blog data:", error);
+      }
+    };
 
-  fetchBlogData();
-}, []);
- const [currentPage, setCurrentPage] = useState(1);
- const itemsPerPage = 5;
- const paginatedData = blogData.slice(
-  (currentPage - 1) * itemsPerPage,
-  currentPage * itemsPerPage
-);
+    fetchBlogData();
+  }, []);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const paginatedData = blogData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
-const totalPages = Math.ceil(blogData.length / itemsPerPage);
+  const totalPages = Math.ceil(blogData.length / itemsPerPage);
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 mt-8">
       <div className="p-6 border-b border-gray-200">
