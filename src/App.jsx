@@ -9,6 +9,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import BlogDetails from './pages/BlogContent';
 import Ebook from './pages/Ebook';
 import Leads from './pages/Leads';
+import CareerDashboard from './pages/CareerDashboard';
+import JobsManagement from './pages/JobsManagement';
+import JobApplication from './pages/JobApplication';
 const App = () => {
   return (
     <Router>
@@ -75,7 +78,31 @@ const App = () => {
               <Leads />
             </ProtectedRoute>
           }
-        />        
+        />
+      <Route
+          path="/career-dashboard"
+          element={
+            <ProtectedRoute>
+              <CareerDashboard />
+            </ProtectedRoute>
+          }
+        />
+      <Route
+          path="/job-management"
+          element={
+            <ProtectedRoute>
+              <JobsManagement />
+            </ProtectedRoute>
+          }
+        />
+      <Route
+          path="/job-application"
+          element={
+            <ProtectedRoute>
+              <JobApplication />
+            </ProtectedRoute>
+          }
+        />                         
       </Routes>
     </Router>
   );
