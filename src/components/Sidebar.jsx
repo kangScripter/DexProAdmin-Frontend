@@ -16,6 +16,7 @@ import {
   RiSettingsLine,
   RiLogoutBoxLine,
   RiBookFill,
+  RiBriefcaseLine,
 } from "react-icons/ri";
 
 const Sidebar = () => {
@@ -34,6 +35,7 @@ const Sidebar = () => {
     { icon: <RiArticleLine />, label: "Blogs", to: "/blogs" },
     { icon: <RiCustomerServiceLine />, label: "Leads", to: "/leads" },
     { icon: <RiBookFill />, label: "Ebooks", to: "/ebooks" },
+    { icon: <RiBriefcaseLine />, label: "Career", to: "/career-dashboard" },
     { icon: <RiGlobalLine />, label: "Website", to: "/website" },
     { icon: <RiFacebookLine />, label: "Meta", to: "/meta" },
     { icon: <RiWhatsappLine />, label: "WhatsApp", to: "/whatsapp" },
