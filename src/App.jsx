@@ -12,6 +12,8 @@ import JobsManagement from './pages/JobsManagement';
 import CareerDashboard from './pages/CareerDashboard';
 import Leads from './pages/Leads';
 import Ebook from './pages/Ebook';
+import ServiceManager from './pages/ServiceManager';
+import ProjectRequestDashboard from './pages/ProjectRequestDashboard';
 const App = () => {
   return (
     <Router>
@@ -102,7 +104,23 @@ const App = () => {
               <JobApplication />
             </ProtectedRoute>
           }
-        />          
+        />   
+      <Route
+          path="/services"
+          element={
+            <ProtectedRoute>
+              <ServiceManager />
+            </ProtectedRoute>
+          }
+        />
+      <Route
+          path="/project-requirement"
+          element={
+            <ProtectedRoute>
+              <ProjectRequestDashboard />
+            </ProtectedRoute>
+          }
+        />                       
       </Routes>
     </Router>
   );
