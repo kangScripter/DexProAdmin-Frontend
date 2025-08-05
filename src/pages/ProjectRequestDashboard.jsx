@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
+import Loader from "../components/Loader";
 
 const ProjectRequestDashboard = () => {
   const [userData, setUserData] = useState([]);
@@ -38,7 +39,7 @@ const ProjectRequestDashboard = () => {
         <h1 className="text-3xl font-bold mb-6">Project Submissions</h1>
 
         {loading ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <Loader/>
         ) : userData.length === 0 ? (
           <p className="text-center text-gray-600">No submissions found.</p>
         ) : (
@@ -58,7 +59,7 @@ const ProjectRequestDashboard = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-green-600">
-                    ₹{user.budgetrange?.toLocaleString?.() || "N/A"}
+                      ₹{Number(user.budgetrange)?.toLocaleString("en-IN") || "N/A"}
                   </p>
                 </div>
               </div>
@@ -103,7 +104,7 @@ const ProjectRequestDashboard = () => {
               <p><strong>Timeline:</strong> {selectedUser.projecttimeline}</p>
               <p><strong>Requirements:</strong> {selectedUser.additionalrequirements}</p>
               <p><strong>Keep Updated:</strong> {selectedUser.keepupdated ? "Yes" : "No"}</p>
-              <p><strong>Budget:</strong> ₹{selectedUser.budgetrange?.toLocaleString?.() || "N/A"}</p>
+              <p><strong>Budget:</strong> ₹{Number(selectedUser.budgetrange)?.toLocaleString("en-IN") || "N/A"}</p>
               <p><strong>Submitted At:</strong> {selectedUser.submittedat ? new Date(selectedUser.submittedat).toLocaleString() : "N/A"}</p>
             </div>
           </div>
