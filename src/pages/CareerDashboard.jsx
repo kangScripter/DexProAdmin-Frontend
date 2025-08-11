@@ -6,6 +6,8 @@ import { getAllJobs } from '../Data/jobData';
 import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function CareerDashboard() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
@@ -28,7 +30,7 @@ export default function CareerDashboard() {
   useEffect(() => {
     const fetchApplicants = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/applicant/get');
+        const response = await axios.get(`${API_URL}/applicant/get`);
         setRecentApplications(response.data || []);
       } catch (error) {
         console.error('Error fetching applicants:', error);
