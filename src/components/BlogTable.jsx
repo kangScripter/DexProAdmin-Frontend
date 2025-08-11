@@ -68,14 +68,15 @@ export default function BlogTable() {
       try {
         const response = await axios.get(`${API_URL}/api/blogs`);
         const blogs = response.data.blogs;
-
+        console.log("Fetched blogs:", blogs);
         const transformed = blogs.map((blog, index) => {
           const isPublished = blog.status === "Published";
-
+          
           return {
             avatar: String(index + 1), // or blog.id if preferred
             color: "bg-blue-500", // could be based on category
             title: blog.title,
+            slug: blog.slug,
             subtitle: `Published on ${new Date(blog.created_at).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
@@ -107,8 +108,18 @@ export default function BlogTable() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-
+  console.log(blogData)
   const totalPages = Math.ceil(blogData.length / itemsPerPage);
+  const handleDeleteBlog = async (slug) => {
+    if (!window.confirm("Are you sure you want to delete this blog?")) return;
+    try {
+      await axios.delete(`${API_URL}/api/blogs/slug/${slug}`);
+      setBlogData((prev) => prev.filter((blog) => blog.slug !== slug));
+    } catch (error) {
+      alert("Failed to delete blog.");
+      console.error("Delete error:", error);
+    }
+  };
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 mt-8">
       <div className="p-6 border-b border-gray-200">
@@ -188,9 +199,10 @@ export default function BlogTable() {
                     <button className="text-gray-400 hover:text-gray-600">
                       <RiEditLine />
                     </button>
-                    <button className="text-gray-400 hover:text-red-600">
+                    <button className="text-gray-400 hover:text-red-600" onClick={() => handleDeleteBlog(row.slug)}>
                       <RiDeleteBinLine />
-                    </button>
+                    </button> 
+                   
                   </div>
                 </td>
               </tr>
