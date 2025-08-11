@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function ServiceManager() {
   const [services, setServices] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -13,7 +15,7 @@ export default function ServiceManager() {
 
   const fetchServices = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/services/get-all");
+      const res = await axios.get(`${API_URL}/services/get-all`);
       setServices(res.data);
     } catch (err) {
       console.error("Error fetching services", err);
@@ -50,7 +52,7 @@ export default function ServiceManager() {
     }
 
     try {
-      await axios.post("http://localhost:3000/services/save", {
+      await axios.post(`${API_URL}/services/save`, {
         title,
         subServices,
       });
