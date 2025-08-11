@@ -8,7 +8,7 @@ export default function StatCard({ icon, title, value, change, color }) {
         </div>
       </div>
       <h3 className="text-2xl font-semibold text-gray-900">{value}</h3>
-      <p className={`text-sm ${change.includes('-') ? 'text-red-500' : 'text-green-500'}`}>{change}</p>
+      {/* <p className={`text-sm ${change.includes('-') ? 'text-red-500' : 'text-green-500'}`}>{change}</p> */}
     </div>
   );
 }

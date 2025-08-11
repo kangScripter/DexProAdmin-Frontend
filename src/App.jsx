@@ -7,6 +7,7 @@ import NewBlog from './pages/NewBlog';
 import AuthRedirect from './components/AuthRedirect';
 import ProtectedRoute from './components/ProtectedRoute';
 import BlogDetails from './pages/BlogContent';
+
 import JobApplication from './pages/JobApplication';
 import JobsManagement from './pages/JobsManagement';
 import CareerDashboard from './pages/CareerDashboard';
@@ -14,6 +15,7 @@ import Leads from './pages/Leads';
 import Ebook from './pages/Ebook';
 import ServiceManager from './pages/ServiceManager';
 import ProjectRequestDashboard from './pages/ProjectRequestDashboard';
+
 const App = () => {
   return (
     <Router>
@@ -104,6 +106,7 @@ const App = () => {
               <JobApplication />
             </ProtectedRoute>
           }
+
         />   
       <Route
           path="/services"
@@ -121,6 +124,9 @@ const App = () => {
             </ProtectedRoute>
           }
         />                       
+
+        />                         
+
       </Routes>
     </Router>
   );

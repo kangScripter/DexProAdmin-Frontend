@@ -91,7 +91,6 @@ export default function PostJobModal({ onclose, jobToEdit }) {
           {jobToEdit ? "Edit Job" : "Post New Job"}
         </h2>
 
-        {/*  Success/Error message display */}
         {message && (
           <div
             className={`p-3 rounded mb-4 text-sm font-medium ${
@@ -154,3 +153,4 @@ export default function PostJobModal({ onclose, jobToEdit }) {
     </div>
   );
 }
+

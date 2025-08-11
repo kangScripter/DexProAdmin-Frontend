@@ -3,9 +3,8 @@ import axios from 'axios';
 import { Search, Eye, Download, X } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 
+
 const API_URL = import.meta.env.VITE_API_URL;
-
-
 const formatDate = (dateString) => {
   const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
   return new Date(dateString).toLocaleDateString(undefined, options);
@@ -25,6 +24,7 @@ const StatusBadge = ({ status }) => {
 };
 
 const getResumeURL = (filename) => `${API_URL}/applicant/download/${filename}`;
+
 
 function JobApplication() {
   const [searchTerm, setSearchTerm] = useState('');

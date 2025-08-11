@@ -258,7 +258,9 @@ const JobsManagement = () => {
       {/* Post/Edit Modal */}
       {showModal && (
         <PostJobModal
+
           onclose={() => {
+
             setShowModal(false);
             setEditJob(null);
           }}
@@ -278,3 +280,4 @@ const JobsManagement = () => {
 };
 
 export default JobsManagement;
+

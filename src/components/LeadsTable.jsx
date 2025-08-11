@@ -138,7 +138,7 @@ function LeadsTable({ data = [], fileName = "leads.xlsx" }) {
                   />
                 </td>
                 <td className="px-2 sm:px-4 py-3 text-gray-500 text-[10px] sm:text-xs">
-                  {new Date(d.created_at).toLocaleString()}
+                  {new Date(d.createdAt).toLocaleString()}
                 </td>
               </tr>
             ))}
@@ -193,3 +193,4 @@ function LeadsTable({ data = [], fileName = "leads.xlsx" }) {
 }
 
 export default LeadsTable;
+

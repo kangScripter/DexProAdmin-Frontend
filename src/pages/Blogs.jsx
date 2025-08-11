@@ -4,14 +4,49 @@ import Sidebar from "../components/Sidebar";
 import DashboardCharts from "../components/DashboardCharts";
 import BlogTable from "../components/BlogTable";
 import { RiArticleLine, RiMailLine, RiMailAddLine, RiEyeLine } from "react-icons/ri";
+import { useEffect } from "react";
+import { useState } from "react";
+import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
 export default function Blogs(){
-    const stats = [
-    { title: "Total Blog Posts", value: "156", change: "+8 posts this month", icon: <RiArticleLine className="text-primary" />, color: "text-primary" },
-    { title: "Total Categories", value: "482", change: "+12.5% conversion rate", icon: <RiMailLine className="text-green-600" />, color: "text-green-600" },
-    { title: "Total Scheduled Blogs", value: "2,845", change: "+16.8% vs last month", icon: <RiMailAddLine className="text-yellow-500" />, color: "text-yellow-500" },
-    { title: "Total Page Views ", value: "45.2K", change: "+22.4% vs last month", icon: <RiEyeLine className="text-pink-500" />, color: "text-pink-500" }
-  ];
+  const [stats, setStats] = useState([]);
+  const [loading, setLoading] = useState(true);
+    useEffect(() => {
+      const stats = async () => {
+        try {
+          const resp = await axios.get(`${API_URL}/api/metrics`);
+          const data = resp.data;
+          console.log("Fetched stats:", data);
+          return [
+            {
+              title: "Total Blogs Posts",
+              value: data.total_blogs,
+              icon: <RiArticleLine className="text-2xl text-blue-500" />
+            },
+            {
+              title: "Total Leads",
+              value: data.total_leads,
+              icon: <RiMailLine className="text-2xl text-green-500" />
+            },
+            {
+              title: "Newsletter Subscribers",
+              value: data.total_newsletter_subscribers,
+              icon: <RiMailAddLine className="text-2xl text-yellow-500" />
+            },
+            {
+              title: "Monthly Page Views",
+              value: data.total_views,
+              icon: <RiEyeLine className="text-2xl text-red-500" />
+            }
+          ]
+        } catch (error) {
+          console.error("Error fetching stats:", error);
+        }
+      }
+      stats().then(setStats);
+    }, []
+  );
     return (
     <div className="flex h-screen">
       <Sidebar />

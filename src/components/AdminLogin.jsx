@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
+const API_URL = import.meta.env.VITE_API_URL;
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,7 +31,7 @@ const AdminLogin = () => {
 
     try {
       console.log(email, password)
-      const res = await axios.post('http://127.0.0.1:3000/validatepassword', {
+      const res = await axios.post(`${API_URL}/validatepassword`, {
         email,
         password, 
       
@@ -44,7 +45,8 @@ const AdminLogin = () => {
       console.log(res?.status)
       if (res?.status === 200) {
         // Save login session
-        const storage = rememberMe ? localStorage : sessionStorage;
+        const storage = localStorage
+        // const storage = rememberMe ? localStorage : sessionStorage;
         storage.setItem('isLoggedIn', 'true');
         storage.setItem('email', email);
         storage.setItem('user', JSON.stringify(res.data.data));
