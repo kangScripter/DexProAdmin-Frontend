@@ -8,6 +8,15 @@ import AuthRedirect from './components/AuthRedirect';
 import ProtectedRoute from './components/ProtectedRoute';
 import BlogDetails from './pages/BlogContent';
 import Users from './pages/Users';
+
+import JobApplication from './pages/JobApplication';
+import JobsManagement from './pages/JobsManagement';
+import CareerDashboard from './pages/CareerDashboard';
+import Leads from './pages/Leads';
+import Ebook from './pages/Ebook';
+import ServiceManager from './pages/ServiceManager';
+import ProjectRequestDashboard from './pages/ProjectRequestDashboard';
+
 const App = () => {
   return (
     <Router>
@@ -69,6 +78,66 @@ const App = () => {
             <BlogDetails />
           </ProtectedRoute>
         } />
+        <Route
+          path="/ebooks"
+          element={
+            <ProtectedRoute>
+              <Ebook />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ebook-leads"
+          element={
+            <ProtectedRoute>
+              <Leads />
+            </ProtectedRoute>
+          }
+        />
+      <Route
+          path="/career-dashboard"
+          element={
+            <ProtectedRoute>
+              <CareerDashboard />
+            </ProtectedRoute>
+          }
+        />
+      <Route
+          path="/job-management"
+          element={
+            <ProtectedRoute>
+              <JobsManagement />
+            </ProtectedRoute>
+          }
+        />
+      <Route
+          path="/job-application"
+          element={
+            <ProtectedRoute>
+              <JobApplication />
+            </ProtectedRoute>
+          }
+
+        />   
+      <Route
+          path="/services"
+          element={
+            <ProtectedRoute>
+              <ServiceManager />
+            </ProtectedRoute>
+          }
+        />
+      <Route
+          path="/project-requirement"
+          element={
+            <ProtectedRoute>
+              <ProjectRequestDashboard />
+            </ProtectedRoute>
+          }
+        />                       
+
+        />                         
+
       </Routes>
     </Router>
   );

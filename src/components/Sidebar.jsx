@@ -3,7 +3,7 @@ import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";    
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { getSessionUser, isLoggedIn } from '../utils/session';
+import { getSessionUser } from "../utils/session";
 import {
   RiUserLine,
   RiDashboardLine,
@@ -13,8 +13,12 @@ import {
   RiFacebookLine,
   RiWhatsappLine,
   RiBarChartLine,
-  RiSettingsLine,
+  RiSettings3Line,
   RiLogoutBoxLine,
+  RiBook2Line,
+  RiBriefcaseLine,
+  RiFolderLine,
+
 } from "react-icons/ri";
 
 const Sidebar = () => {
@@ -34,7 +38,7 @@ const Sidebar = () => {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate('/login');
+    navigate("/login");
   };
 
   const handleProfileChange = (e) => {
@@ -70,25 +74,27 @@ const Sidebar = () => {
     { icon: <RiDashboardLine />, label: "Dashboard", to: "/dashboard" },
     { icon: <RiUserLine />, label: "Users", to: "/users" },
     { icon: <RiArticleLine />, label: "Blogs", to: "/blogs" },
-    { icon: <RiCustomerServiceLine />, label: "Leads", to: "/leads" },
+//     { icon: <RiCustomerServiceLine />, label: "Leads", to: "/leads" },
+//     { icon: <RiGlobalLine />, label: "Website", to: "https://dexprosolutions.com", external: true },
+    { icon: <RiBook2Line />, label: "Ebooks", to: "/ebooks" },
+    { icon: <RiBriefcaseLine />, label: "Career", to: "/career-dashboard" },
     { icon: <RiGlobalLine />, label: "Website", to: "https://dexprosolutions.com", external: true },
-    { icon: <RiFacebookLine />, label: "Meta", to: "/meta" },
-    { icon: <RiWhatsappLine />, label: "WhatsApp", to: "/whatsapp" },
-    { icon: <RiBarChartLine />, label: "Analytics", to: "/analytics" },
-    { icon: <RiSettingsLine />, label: "Services", to: "/services" },
+//     { icon: <RiFacebookLine />, label: "Meta", to: "/meta" },
+    { icon: <RiSettings3Line />, label: "Services", to: "/services" },
+    { icon: <RiFolderLine />, label: "Projects", to: "/project-requirement" },
+//     { icon: <RiWhatsappLine />, label: "WhatsApp", to: "/whatsapp" },
+//     { icon: <RiBarChartLine />, label: "Analytics", to: "/analytics" },
   ];
 
   return (
     <div className="w-64 bg-white shadow-sm border-r border-gray-200 flex flex-col">
       {/* Logo */}
       <div className="p-5 border-gray-200">
-        {/* <div className="font-['Pacifico'] text-2xl text-primary">Dexpro</div>
-        <div className="text-sm text-gray-500 mt-1">Solutions</div> */}
         <img
-                src="logo.png" 
-                alt="Dexpro Solutions"
-                className="h-10 w-100 object-contain"
-              />
+          src="logo.png"
+          alt="Dexpro Solutions"
+          className="h-10 w-100 object-contain"
+        />
       </div>
 
       {/* User Profile */}
@@ -102,14 +108,16 @@ const Sidebar = () => {
             )}
           </div>
           <div>
-            <div className="font-medium text-gray-900">{user.first_name} {user.last_name}</div>
+            <div className="font-medium text-gray-900">
+              {user.first_name} {user.last_name}
+            </div>
             <div className="text-sm text-gray-500">{user.role}</div>
           </div>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 p-4 overflow-y-auto">
         <ul className="space-y-2">
           {navItems.map((item, index) => {
             const isActive = location.pathname === item.to;
