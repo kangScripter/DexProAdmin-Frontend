@@ -4,6 +4,8 @@ import axios from "axios";
 import Sidebar from "../components/Sidebar";
 import Loader from "../components/Loader";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const ProjectRequestDashboard = () => {
   const [userData, setUserData] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -12,7 +14,7 @@ const ProjectRequestDashboard = () => {
   // Fetch data from backend
   useEffect(() => {
     axios
-      .get("http://localhost:3000/project-requirements/get-all")
+      .get(`${API_URL}/project-requirements/get-all`)
       .then((res) => {
         setUserData(res.data);
       })
