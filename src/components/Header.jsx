@@ -8,12 +8,13 @@ import {
   RiDownloadLine,
   RiRefreshLine,
 } from "react-icons/ri";
-import { getSessionUser, isLoggedIn } from '../utils/session';
+import { getSessionUser } from '../utils/session';
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const user = getSessionUser();
+
   const getPrimaryButtonLabel = () => {
     if (location.pathname === '/dashboard') return 'New User';
     if (location.pathname === '/blogs') return 'Write a Blog';
@@ -28,9 +29,10 @@ const Header = () => {
     if (location.pathname.startsWith('/blogs')) {
       navigate('/blogs/new');
     } else if (location.pathname.startsWith('/dashboard')) {
-      navigate('/dashboard/users/new'); // or whatever route you use for adding a user
+      // Optionally, navigate to a user creation page or do nothing
     }
   };
+
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 px-8 py-4">
       {/* Top Section */}
@@ -80,8 +82,9 @@ const Header = () => {
         </div>
 
         <div className="flex items-center space-x-3">
-          <button className="bg-primary text-white px-4 py-2 rounded-button flex items-center space-x-2"
-          onClick={handleClick}
+          <button
+            className="bg-primary text-white px-4 py-2 rounded-button flex items-center space-x-2"
+            onClick={handleClick}
           >
             <RiAddLine className="w-4 h-4" />
             <span>{getPrimaryButtonLabel()}</span>
