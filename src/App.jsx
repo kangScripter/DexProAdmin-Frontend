@@ -7,6 +7,7 @@ import NewBlog from './pages/NewBlog';
 import AuthRedirect from './components/AuthRedirect';
 import ProtectedRoute from './components/ProtectedRoute';
 import BlogDetails from './pages/BlogContent';
+import Users from './pages/Users';
 
 import JobApplication from './pages/JobApplication';
 import JobsManagement from './pages/JobsManagement';
@@ -60,6 +61,16 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute>
+              <Users />
+            </ProtectedRoute>
+          }
+        />
+
         <Route 
         path="/blogs/:blogId" 
         element={

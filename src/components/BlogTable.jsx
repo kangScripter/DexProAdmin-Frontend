@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { RiSearchLine, RiEditLine, RiDeleteBinLine, RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
+import BlogForm from './BlogForm';
 
 const API_URL = import.meta.env.VITE_API_URL;
 export default function BlogTable() {
@@ -120,6 +121,45 @@ export default function BlogTable() {
       console.error("Delete error:", error);
     }
   };
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editBlog, setEditBlog] = useState(null);
+  const [editLoading, setEditLoading] = useState(false);
+
+  const openEditModal = (blog) => {
+    setEditBlog(blog);
+    setEditModalOpen(true);
+  };
+
+  const handleUpdateBlog = async (formData) => {
+    setEditLoading(true);
+    try {
+      const payload = new FormData();
+      for (const key in formData) {
+        if (key !== 'featured_image' && formData[key]) {
+          payload.append(key, formData[key]);
+        }
+      }
+      if (formData.featured_image) {
+        payload.append('featured_image', formData.featured_image);
+      }
+      if (formData.status === 'Scheduled' && formData.schedule_date && formData.schedule_time) {
+        const scheduled_time = `${formData.schedule_date}T${formData.schedule_time}:00`;
+        payload.append('scheduled_time', scheduled_time);
+      }
+      await axios.put(`${API_URL}/api/blogs/${editBlog.slug}`, payload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setEditModalOpen(false);
+      // Refresh blogs
+      const response = await axios.get(`${API_URL}/api/blogs`);
+      setBlogData(response.data.blogs);
+      alert('Blog updated!');
+    } catch (error) {
+      alert('Failed to update blog');
+    } finally {
+      setEditLoading(false);
+    }
+  };
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 mt-8">
       <div className="p-6 border-b border-gray-200">
@@ -196,7 +236,7 @@ export default function BlogTable() {
                 <td className="px-6 py-4 text-sm text-gray-500">{row.lastActive}</td>
                 <td className="px-6 py-4">
                   <div className="flex items-center space-x-2">
-                    <button className="text-gray-400 hover:text-gray-600">
+                    <button className="text-gray-400 hover:text-gray-600" onClick={() => openEditModal(row)}>
                       <RiEditLine />
                     </button>
                     <button className="text-gray-400 hover:text-red-600" onClick={() => handleDeleteBlog(row.slug)}>
@@ -253,6 +293,21 @@ export default function BlogTable() {
     </button>
   </div>
 </div>
+      {editModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-opacity-40">
+          <div className="bg-white p-8 rounded-xl shadow-2xl w-[90%] max-w-4xl overflow-y-auto max-h-[90vh]">
+            <h3 className="text-2xl font-bold mb-4 text-gray-800">Edit Blog</h3>
+            <BlogForm
+              mode="edit"
+              initialValues={editBlog}
+              submitLabel="Update Blog"
+              loading={editLoading}
+              onSubmit={handleUpdateBlog}
+              onCancel={() => setEditModalOpen(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
