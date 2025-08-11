@@ -9,6 +9,7 @@ import {
   RiRefreshLine,
 } from "react-icons/ri";
 import { getSessionUser } from '../utils/session';
+import * as XLSX from 'xlsx';
 
 const Header = () => {
   const location = useLocation();
@@ -17,20 +18,51 @@ const Header = () => {
 
   const getPrimaryButtonLabel = () => {
     if (location.pathname === '/dashboard') return 'New User';
+    if (location.pathname === '/users') return 'New User';
     if (location.pathname === '/blogs') return 'Write a Blog';
     return 'Create';
   };
   const getPrimaryPageName = () => {
     if (location.pathname === '/dashboard') return 'Dashboard';
+    if (location.pathname === '/users') return 'Users';
     if (location.pathname === '/blogs') return 'Blogs';
+    if (location.pathname === '/leads') return 'Leads';
+    if (location.pathname === '/Careers') return 'Careers';
+
     return 'Home';
   }
   const handleClick = () => {
-    if (location.pathname.startsWith('/blogs')) {
+    if (getPrimaryButtonLabel() === 'New User') {
+      navigate('/users');
+    } else if (location.pathname.startsWith('/blogs')) {
       navigate('/blogs/new');
     } else if (location.pathname.startsWith('/dashboard')) {
       // Optionally, navigate to a user creation page or do nothing
     }
+  };
+
+  // Export newsletter subscribers to Excel
+  const exportSubscribersToExcel = () => {
+    // Get subscribers from localStorage or window (since Header doesn't have direct access to state)
+    let subscribers = [];
+    if (window.__newsletter_subscribers) {
+      subscribers = window.__newsletter_subscribers;
+    } else if (localStorage.getItem('newsletter_subscribers')) {
+      try {
+        subscribers = JSON.parse(localStorage.getItem('newsletter_subscribers'));
+      } catch {}
+    }
+    if (!subscribers.length) {
+      alert('No subscribers to export!');
+      return;
+    }
+    const ws = XLSX.utils.json_to_sheet(subscribers.map(s => ({
+      Email: s.email,
+      'Subscribed At': s.created_at ? new Date(s.created_at).toLocaleString() : ''
+    })));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Subscribers');
+    XLSX.writeFile(wb, 'newsletter_subscribers.xlsx');
   };
 
   return (
@@ -76,9 +108,11 @@ const Header = () => {
       <div className="flex items-center justify-between mt-4">
         <div>
           <div className="text-sm font-medium text-gray-900">
-            Today: July 8, 2025
+            Today: {new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
           </div>
-          <div className="text-sm text-gray-500">Tuesday, 04:57 PM</div>
+          <div className="text-sm text-gray-500">
+            {new Date().toLocaleString(undefined, { weekday: 'long', hour: '2-digit', minute: '2-digit' })}
+          </div>
         </div>
 
         <div className="flex items-center space-x-3">
@@ -89,7 +123,10 @@ const Header = () => {
             <RiAddLine className="w-4 h-4" />
             <span>{getPrimaryButtonLabel()}</span>
           </button>
-          <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-button flex items-center space-x-2">
+          <button
+            className="border border-gray-300 text-gray-700 px-4 py-2 rounded-button flex items-center space-x-2"
+            onClick={location.pathname === '/users' ? exportSubscribersToExcel : undefined}
+          >
             <RiDownloadLine className="w-4 h-4" />
             <span>Export</span>
           </button>
