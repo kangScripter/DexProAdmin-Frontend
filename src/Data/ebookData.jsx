@@ -1,4 +1,4 @@
-// src/Data/ebookData.js
+
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -58,4 +58,6 @@ export const updateEbookById = async (id, payload) => {
 export const deleteEbookById = async (id) => {
   const { data } = await api.delete(`/delete/${id}`);
   return data;
+
 };
+
