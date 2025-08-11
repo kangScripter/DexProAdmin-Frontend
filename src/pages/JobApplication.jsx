@@ -3,6 +3,9 @@ import axios from 'axios';
 import { Search, Eye, Download, X } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 const formatDate = (dateString) => {
   const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
   return new Date(dateString).toLocaleDateString(undefined, options);
@@ -21,7 +24,7 @@ const StatusBadge = ({ status }) => {
   return <span className={`${baseClasses} ${statusClasses[key] || 'bg-gray-100 text-gray-800'}`}>{status}</span>;
 };
 
-const getResumeURL = (filename) => `http://localhost:3000/applicant/download/${filename}`;
+const getResumeURL = (filename) => `${API_URL}/applicant/download/${filename}`;
 
 function JobApplication() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,7 +37,7 @@ function JobApplication() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/applicant/get');
+        const response = await axios.get(`${API_URL}/applicant/get`);
         setRecentApplications(response.data || []);
       } catch (error) {
         console.error('Error fetching applicants:', error);
@@ -136,7 +139,7 @@ function JobApplication() {
                         onChange={async (e) => {
                           const newStatus = e.target.value;
                           try {
-                            await axios.patch(`http://localhost:3000/applicant/update/${applicant.id}`, {
+                            await axios.patch(`${API_URL}/applicant/update/${applicant.id}`, {
                               status: newStatus,
                             });
                             setRecentApplications(prev =>
