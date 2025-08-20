@@ -17,6 +17,23 @@ export default function BlogForm({
 }) {
   const fileInputRef = useRef(null);
   const editorRef = useRef(null);
+  // useEffect(() => {
+  //   const fetchBlog = async () => {
+  //     if (mode === 'edit' && initialValues.id) {
+  //       try {
+  //         const res = await axios.get(`${API_URL}/api/blogs/${initialValues.id}`);
+  //         setFormData(res.data.blog);
+  //       } catch (error) {
+  //         console.error('Failed to fetch blog:', error);
+  //       }
+  //       setLoading(false);
+
+  //     }
+  //   }
+  //   fetchBlog();
+  // }
+
+  // })
   const [formData, setFormData] = useState({
     title: '',
     short_desc: '',

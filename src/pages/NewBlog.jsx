@@ -29,7 +29,7 @@ const NewBlog = () => {
         slug: '',
         featured_image: null,
         content: '',
-        status: 'Draft',
+        status: 'Published', // ✅ NEW
         scheduled: false,
         schedule_date: '',
         schedule_time: '',
@@ -437,7 +437,7 @@ const NewBlog = () => {
               onChange={(e) => handleInputChange('status', e.target.value)}
             >
               <option>Draft</option>
-              <option>Published</option>
+              {/* <option>Published</option> */}
               <option>Scheduled</option>
             </select>
 
@@ -493,59 +493,79 @@ const NewBlog = () => {
     ))}
   </select> */}
         <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-              <select
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-2"
-                value={formData.category}
-                onChange={e => {
-                  const val = e.target.value;
-                  if (val === '__other') {
-                    setNewCategory('');
-                    handleInputChange('category', ''); // temporarily clear
-                  } else {
-                    handleInputChange('category', val);
-                  }
-                }}
-              >
-                <option value="">Select category</option>
-                {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-                <option value="__other">Other (Add New)</option>
-              </select>
+  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+  <select
+    className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-2"
+    value={formData.category}
+    onChange={e => {
+      const val = e.target.value;
+      handleInputChange('category', val);
+      if (val !== '__other') setNewCategory('');
+    }}
+  >
+    <option value="">Select category</option>
+    {categories.map(cat => (
+      <option key={cat} value={cat}>{cat}</option>
+    ))}
+    <option value="__other">Other (Add New)</option>
+  </select>
 
-              {/* Show input only if Other is selected */}
-              {formData.category === '' && (
-                <div className="flex gap-2 mt-2">
-                  <input
-                    type="text"
-                    placeholder="Enter new category"
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg"
-                    value={newCategory}
-                    onChange={e => setNewCategory(e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    onClick={() => {
-                      const trimmed = newCategory.trim();
-                      if (trimmed) {
-                        setCategories([...categories, trimmed]);
-                        handleInputChange('category', trimmed);
-                        setNewCategory('');
-                      }
-                    }}
-                  >
-                    Add
-                  </button>
-                </div>
-              )}
-            </div>
+  {/* Show input only if Other is selected */}
+  {formData.category === '__other' && (
+    <div className="flex gap-2 mt-2">
+      <input
+        type="text"
+        placeholder="Enter new category"
+        className="flex-1 px-4 py-3 border border-gray-300 rounded-lg"
+        value={newCategory}
+        onChange={e => setNewCategory(e.target.value)}
+      />
+      <button
+        type="button"
+        className="px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary-700 cursor-pointer"
+        onClick={() => {
+          const trimmed = newCategory.trim();
+          if (trimmed) {
+            setCategories([...categories, trimmed]);
+            handleInputChange('category', trimmed); // set final category
+            setNewCategory('');
+          }
+        }}
+      >
+        Add
+      </button>
+    </div>
+  )}
+</div>
             </div>
 
             <input type="text" placeholder="Tags (comma separated)"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-              onChange={(e) => handleInputChange('tags', e.target.value)} />
+              value={formData.tags}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (formData.tags.trim()) {
+                    handleInputChange('tags', formData.tags + ',');
+                  }
+                }
+              }}
+              onChange={e => handleInputChange('tags', e.target.value)}
+            />
+            <div className="flex flex-wrap gap-2 mt-2">
+              {formData.tags
+                .split(',')
+                .map(tag => tag.trim())
+                .filter(tag => tag)
+                .map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium"
+                  >
+                    {tag}
+                  </span>
+                ))}
+            </div>
           </div>
 
           {/* SEO Settings */}
