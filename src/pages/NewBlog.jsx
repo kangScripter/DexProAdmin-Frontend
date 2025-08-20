@@ -9,6 +9,7 @@ import axios from 'axios';
 import QuillEditor from "react-quill-new";
 import 'react-quill-new/dist/quill.snow.css'; // Import the default snow theme styles
 import 'react-quill-new/dist/quill.bubble.css'; // Import the bubble theme styles
+import BlogForm from '../components/BlogForm';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
