@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { X } from 'lucide-react';
 const API_URL = import.meta.env.VITE_API_URL;
 const AdminLogin = () => {
@@ -153,9 +153,9 @@ const AdminLogin = () => {
                   Remember me
                 </label>
               </div>
-              <a href="#" className="text-sm text-primary hover:text-secondary transition-colors">
+              <Link to="/forgot-password" className="text-sm text-primary hover:text-secondary transition-colors">
                 Forgot Password?
-              </a>
+              </Link>
             </div>
 
             <button

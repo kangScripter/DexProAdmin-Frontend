@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import axios from 'axios';
-import { Search, Eye, Download, X } from 'lucide-react';
+import { Search, Eye, Download, X, Trash2 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 
 
@@ -23,7 +23,7 @@ const StatusBadge = ({ status }) => {
   return <span className={`${baseClasses} ${statusClasses[key] || 'bg-gray-100 text-gray-800'}`}>{status}</span>;
 };
 
-const getResumeURL = (filename) => `${API_URL}/applicant/download/${filename}`;
+const getResumeURL = (filename) => `${filename}`;
 
 
 function JobApplication() {
@@ -31,6 +31,7 @@ function JobApplication() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [recentApplications, setRecentApplications] = useState([]);
+  const [deletingApplicant, setDeletingApplicant] = useState(null);
 
   const filters = ['all', 'new', 'reviewed', 'shortlisted', 'rejected', 'interviewed'];
 
@@ -62,6 +63,32 @@ function JobApplication() {
         );
       });
   }, [searchTerm, activeFilter, recentApplications]);
+
+  const handleDeleteApplicant = async (applicant) => {
+    if (!window.confirm(`Are you sure you want to delete the application from ${applicant.name}? This action cannot be undone.`)) {
+      return;
+    }
+
+    setDeletingApplicant(applicant.id);
+    try {
+      await axios.delete(`${API_URL}/applicant/delete/${applicant.id}`);
+      
+      // Remove from local state
+      setRecentApplications(prev => prev.filter(a => a.id !== applicant.id));
+      
+      // Close modal if the deleted applicant was selected
+      if (selectedApplicant && selectedApplicant.id === applicant.id) {
+        setSelectedApplicant(null);
+      }
+      
+      alert('Application deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting applicant:', error);
+      alert('Failed to delete application. Please try again.');
+    } finally {
+      setDeletingApplicant(null);
+    }
+  };
 
   return (
     <div className="bg-slate-50 min-h-screen font-sans p-4 sm:p-6 lg:p-8">
@@ -166,18 +193,32 @@ function JobApplication() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-4">
                         <button
-                          className="text-slate-500 hover:text-blue-600"
+                          className="text-slate-500 hover:text-blue-600 transition-colors"
                           onClick={() => setSelectedApplicant(applicant)}
+                          title="View Details"
                         >
                           <Eye className="h-5 w-5" />
                         </button>
                         <a
                           href={getResumeURL(applicant.resume_pdf)}
                           download
-                          className="text-slate-500 hover:text-blue-600"
+                          className="text-slate-500 hover:text-blue-600 transition-colors"
+                          title="Download Resume"
                         >
                           <Download className="h-5 w-5" />
                         </a>
+                        <button
+                          className="text-slate-500 hover:text-red-600 transition-colors"
+                          onClick={() => handleDeleteApplicant(applicant)}
+                          disabled={deletingApplicant === applicant.id}
+                          title="Delete Application"
+                        >
+                          {deletingApplicant === applicant.id ? (
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-600"></div>
+                          ) : (
+                            <Trash2 className="h-5 w-5" />
+                          )}
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -242,14 +283,28 @@ function JobApplication() {
               <StatusBadge status={selectedApplicant.status} />
             </div>
 
-            <a
-              href={getResumeURL(selectedApplicant.resume_pdf)}
-              download
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[#140228] hover:bg-[#20033d] text-white font-medium rounded-md transition"
-            >
-              <Download className="w-4 h-4" />
-              Download Resume
-            </a>
+            <div className="flex gap-3">
+              <a
+                href={getResumeURL(selectedApplicant.resume_pdf)}
+                download
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#140228] hover:bg-[#20033d] text-white font-medium rounded-md transition"
+              >
+                <Download className="w-4 h-4" />
+                Download Resume
+              </a>
+              <button
+                onClick={() => handleDeleteApplicant(selectedApplicant)}
+                disabled={deletingApplicant === selectedApplicant.id}
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deletingApplicant === selectedApplicant.id ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

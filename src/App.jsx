@@ -8,6 +8,7 @@ import AuthRedirect from './components/AuthRedirect';
 import ProtectedRoute from './components/ProtectedRoute';
 import BlogDetails from './pages/BlogContent';
 import Users from './pages/Users';
+import ForgotPassword from './pages/ForgotPassword';
 
 import JobApplication from './pages/JobApplication';
 import JobsManagement from './pages/JobsManagement';
@@ -37,6 +38,15 @@ const App = () => {
             </AuthRedirect>
           }
         />
+        <Route
+          path="/forgot-password"
+          element={
+            <AuthRedirect>
+              <ForgotPassword />
+            </AuthRedirect>
+          }
+        />
+
        <Route
           path="/dashboard"
           element={
@@ -135,8 +145,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />                       
-
-        />                         
 
       </Routes>
     </Router>

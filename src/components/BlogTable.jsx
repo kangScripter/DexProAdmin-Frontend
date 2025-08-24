@@ -6,6 +6,7 @@ import {
   RiDeleteBinLine,
   RiArrowLeftSLine,
   RiArrowRightSLine,
+  RiCloseLine,
 } from "react-icons/ri";
 import BlogForm from "./BlogForm";
 
@@ -46,6 +47,8 @@ export default function BlogTable() {
               blog.views_count > 1000
                 ? (blog.views_count / 1000).toFixed(1) + "K views"
                 : blog.views_count + " views",
+            is_featured: blog.is_featured || false,
+            is_pinned: blog.is_pinned || false,
           };
         });
         setBlogData(transformed);
@@ -114,6 +117,9 @@ export default function BlogTable() {
   const [editBlog, setEditBlog] = useState(null);
   const [editLoading, setEditLoading] = useState(false);
 
+  // Quick Actions
+  const [updatingBlog, setUpdatingBlog] = useState(null);
+
   const openEditModal = (blog) => {
     setEditBlog(blog);
     setEditModalOpen(true);
@@ -152,6 +158,45 @@ export default function BlogTable() {
       alert("Failed to update blog");
     } finally {
       setEditLoading(false);
+    }
+  };
+
+  // Quick Actions
+  const handleToggleFeatured = async (blog) => {
+    setUpdatingBlog(blog.slug);
+    try {
+      await axios.patch(`${API_URL}/api/blogs/${blog.slug}/toggle-featured`);
+      
+      // Update local state
+      setBlogData(prev => prev.map(b => 
+        b.slug === blog.slug 
+          ? { ...b, is_featured: !b.is_featured }
+          : b
+      ));
+    } catch (error) {
+      console.error('Failed to toggle featured status:', error);
+      alert('Failed to update featured status');
+    } finally {
+      setUpdatingBlog(null);
+    }
+  };
+
+  const handleTogglePinned = async (blog) => {
+    setUpdatingBlog(blog.slug);
+    try {
+      await axios.patch(`${API_URL}/api/blogs/${blog.slug}/toggle-pinned`);
+      
+      // Update local state
+      setBlogData(prev => prev.map(b => 
+        b.slug === blog.slug 
+          ? { ...b, is_pinned: !b.is_pinned }
+          : b
+      ));
+    } catch (error) {
+      console.error('Failed to toggle pinned status:', error);
+      alert('Failed to update pinned status');
+    } finally {
+      setUpdatingBlog(null);
     }
   };
 
@@ -236,6 +281,12 @@ export default function BlogTable() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Views
               </th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Featured
+              </th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Pinned
+              </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
@@ -283,6 +334,36 @@ export default function BlogTable() {
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500">
                   {row.lastActive}
+                </td>
+                <td className="px-6 py-4 text-center">
+                  <button
+                    onClick={() => handleToggleFeatured(row)}
+                    disabled={updatingBlog === row.slug}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                      row.is_featured ? 'bg-primary' : 'bg-gray-200'
+                    } ${updatingBlog === row.slug ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        row.is_featured ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </td>
+                <td className="px-6 py-4 text-center">
+                  <button
+                    onClick={() => handleTogglePinned(row)}
+                    disabled={updatingBlog === row.slug}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                      row.is_pinned ? 'bg-primary' : 'bg-gray-200'
+                    } ${updatingBlog === row.slug ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        row.is_pinned ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center space-x-2">
@@ -352,17 +433,27 @@ export default function BlogTable() {
 
       {/* Edit Modal */}
       {editModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-opacity-40">
-          <div className="bg-white p-8 rounded-xl shadow-2xl w-[90%] max-w-4xl overflow-y-auto max-h-[90vh]">
-            <h3 className="text-2xl font-bold mb-4 text-gray-800">Edit Blog</h3>
-            <BlogForm
-              mode="edit"
-              initialValues={editBlog}
-              submitLabel="Update Blog"
-              loading={editLoading}
-              onSubmit={handleUpdateBlog}
-              onCancel={() => setEditModalOpen(false)}
-            />
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black bg-opacity-50">
+          <div className="bg-white rounded-2xl shadow-2xl w-[95%] max-w-7xl h-[95vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 className="text-2xl font-bold text-gray-800">Edit Blog Post</h3>
+              <button
+                onClick={() => setEditModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <RiCloseLine size={24} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-6">
+              <BlogForm
+                mode="edit"
+                initialValues={editBlog}
+                submitLabel="Update Blog"
+                loading={editLoading}
+                onSubmit={handleUpdateBlog}
+                onCancel={() => setEditModalOpen(false)}
+              />
+            </div>
           </div>
         </div>
       )}
